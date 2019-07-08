@@ -3,12 +3,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:bmi_calculator/widgets/bmi_cards.dart';
 import 'package:bmi_calculator/widgets/bmi_icon_content.dart';
+import 'package:bmi_calculator/widgets/bmi_constants.dart';
 
-const backgroundAppColour = Color(0xFF0A0E21);
-const activeCardColour = Color(0xFF1D1E33);
-const inactiveCardColour = Color(0xFF111328);
-const bottomContainerColour = Color(0xFFEB1555);
-const bottomContainerHeight = 80.0;
+import 'package:bmi_calculator/enums/enum_gender_bmi.dart';
 
 class BMIMenu extends StatefulWidget {
   @override
@@ -22,8 +19,8 @@ class _BMIMenuState extends State<BMIMenu> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark().copyWith(
-        backgroundColor: backgroundAppColour,
-        scaffoldBackgroundColor: backgroundAppColour,
+        backgroundColor: kBackgroundAppColour,
+        scaffoldBackgroundColor: kBackgroundAppColour,
       ),
       home: _ContentBMIMenu(),
     );
@@ -36,27 +33,8 @@ class _ContentBMIMenu extends StatefulWidget {
 }
 
 class __ContentBMIMenuState extends State<_ContentBMIMenu> {
-  Color maleCardColour = inactiveCardColour;
-  Color femaleCardColour = inactiveCardColour;
-
-  //1 = male, 2 = female
-  void updateColour(int gender) {
-    if (gender == 1) {
-      if (maleCardColour == inactiveCardColour) {
-        maleCardColour = activeCardColour;
-        femaleCardColour = inactiveCardColour;
-      }else {
-        maleCardColour = inactiveCardColour;
-      }
-    }else if(gender == 2) {
-      if (femaleCardColour == inactiveCardColour) {
-        femaleCardColour = activeCardColour;
-        maleCardColour = inactiveCardColour;
-      }else{
-        femaleCardColour = inactiveCardColour;
-      }
-    }
-  }
+  BMI_Calculator_Gender selectedGender;
+  int height = 180;
 
   @override
   Widget build(BuildContext context) {
@@ -66,40 +44,39 @@ class __ContentBMIMenuState extends State<_ContentBMIMenu> {
          centerTitle: true,
        ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           Expanded(
             child: Row(
               children: <Widget>[
                 Expanded(
-                  child: GestureDetector(
-                    onTap: () {
+                  child: CardBMI(
+                    onPress: () {
                       setState(() {
-                        updateColour(1);
+                        selectedGender = BMI_Calculator_Gender.Male;
                       });
                     },
-                    child: CardBMI(
-                      colour: maleCardColour,
-                      cardChild: IconContent(
-                          iconData: FontAwesomeIcons.mars,
-                          labelText: 'MALE'
-                      )
-                    ),
+                    colour: //maleCardColour
+                      selectedGender == BMI_Calculator_Gender.Male ? kActiveCardColour : kInactiveCardColour,
+                    cardChild: IconContent(
+                        iconData: FontAwesomeIcons.mars,
+                        labelText: 'MALE'
+                    )
                   ),
                 ),
                 Expanded(
-                  child: GestureDetector(
-                    onTap: () {
+                  child: CardBMI(
+                    onPress: () {
                       setState(() {
-                        updateColour(2);
+                        selectedGender = BMI_Calculator_Gender.Female;
                       });
                     },
-                    child: CardBMI(
-                      colour: femaleCardColour,
-                      cardChild: IconContent(
-                          iconData: FontAwesomeIcons.venus,
-                          labelText: 'FEMALE'
-                      )
-                    ),
+                    colour: //femaleCardColour
+                      selectedGender == BMI_Calculator_Gender.Female ? kActiveCardColour : kInactiveCardColour,
+                    cardChild: IconContent(
+                        iconData: FontAwesomeIcons.venus,
+                        labelText: 'FEMALE'
+                    )
                   ),
                 ),
               ],
@@ -108,7 +85,42 @@ class __ContentBMIMenuState extends State<_ContentBMIMenu> {
 
           Expanded(
             child: CardBMI(
-                colour: activeCardColour
+              colour: kActiveCardColour,
+              cardChild: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    'HEIGHT',
+                    style: kLabelTextStyle,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.alphabetic,
+                    children: <Widget>[
+                      Text(
+                        '$height',
+                        style: kNumberTextStyle,
+                      ),
+                      Text(
+                        'cm',
+                        style: kLabelTextStyle,
+                      ),
+                    ],
+                  ),
+                  Slider(
+                      value: height.toDouble(),
+                      min: 120.0,
+                      activeColor: Color(0xFFEB1555),
+                      inactiveColor: Color(0xFF8D8E98),
+                      onChanged: (double newHeight) {
+                        setState(() {
+                          height = newHeight.round();
+                        });
+                      },
+                  )
+                ],
+              ),
             )
           ),
 
@@ -117,12 +129,12 @@ class __ContentBMIMenuState extends State<_ContentBMIMenu> {
               children: <Widget>[
                 Expanded(
                     child: CardBMI(
-                      colour: activeCardColour,
+                      colour: kActiveCardColour,
                     )
                 ),
                 Expanded(
                   child: CardBMI(
-                      colour: activeCardColour
+                      colour: kActiveCardColour
                   ),
                 ),
               ],
@@ -130,10 +142,10 @@ class __ContentBMIMenuState extends State<_ContentBMIMenu> {
           ),
 
           Container(
-            color: bottomContainerColour,
+            color: kBottomContainerColour,
             margin: EdgeInsets.only(top: 10.0),
             width: double.infinity,
-            height: bottomContainerHeight,
+            height: kBottomContainerHeight,
           )
         ],
       ),
