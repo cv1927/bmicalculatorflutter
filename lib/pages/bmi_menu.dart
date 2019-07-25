@@ -4,8 +4,12 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:bmi_calculator/widgets/bmi_cards.dart';
 import 'package:bmi_calculator/widgets/bmi_icon_content.dart';
 import 'package:bmi_calculator/widgets/bmi_constants.dart';
+import 'package:bmi_calculator/widgets/bmi_bottombutton.dart';
+import 'package:bmi_calculator/widgets/bmi_round_button.dart';
 
 import 'package:bmi_calculator/enums/enum_gender_bmi.dart';
+
+import 'package:bmi_calculator/functions/bmi_brain.dart';
 
 class BMIMenu extends StatefulWidget {
   @override
@@ -16,14 +20,7 @@ class BMIMenu extends StatefulWidget {
 class _BMIMenuState extends State<BMIMenu> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData.dark().copyWith(
-        backgroundColor: kBackgroundAppColour,
-        scaffoldBackgroundColor: kBackgroundAppColour,
-      ),
-      home: _ContentBMIMenu(),
-    );
+    return _ContentBMIMenu();
   }
 }
 
@@ -35,6 +32,8 @@ class _ContentBMIMenu extends StatefulWidget {
 class __ContentBMIMenuState extends State<_ContentBMIMenu> {
   BMI_Calculator_Gender selectedGender;
   int height = 180;
+  int weight = 70;
+  int age = 18;
 
   @override
   Widget build(BuildContext context) {
@@ -108,16 +107,25 @@ class __ContentBMIMenuState extends State<_ContentBMIMenu> {
                       ),
                     ],
                   ),
-                  Slider(
-                      value: height.toDouble(),
-                      min: 120.0,
-                      activeColor: Color(0xFFEB1555),
-                      inactiveColor: Color(0xFF8D8E98),
-                      onChanged: (double newHeight) {
-                        setState(() {
-                          height = newHeight.round();
-                        });
-                      },
+                  SliderTheme(
+                    data: SliderTheme.of(context).copyWith(
+                      inactiveTrackColor: Color(0xFF8D8E98),
+                      activeTrackColor: Colors.white,
+                      thumbColor: Color(0xFFEB1555),
+                      overlayColor: Color(0x29EB1555),
+                      thumbShape: RoundSliderThumbShape(enabledThumbRadius: 15.0),
+                      overlayShape: RoundSliderOverlayShape(overlayRadius: 30.0),
+                    ),
+                    child: Slider(
+                        value: height.toDouble(),
+                        min: 120.0,
+                        max: 220.0,
+                        onChanged: (double newHeight) {
+                          setState(() {
+                            height = newHeight.round();
+                          });
+                        },
+                    ),
                   )
                 ],
               ),
@@ -130,22 +138,85 @@ class __ContentBMIMenuState extends State<_ContentBMIMenu> {
                 Expanded(
                     child: CardBMI(
                       colour: kActiveCardColour,
+                      cardChild: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text('WEIGHT', style: kLabelTextStyle,),
+                          Text('$weight', style: kNumberTextStyle,),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              RoundIconButton(
+                                onPress: () {
+                                  setState(() {
+                                    weight--;
+                                  });
+                                },
+                                icon: FontAwesomeIcons.minus,
+                              ),
+                              SizedBox(width: 10.0,),
+                              RoundIconButton(
+                                onPress: () {
+                                  setState(() {
+                                    weight++;
+                                  });
+                                },
+                                icon: FontAwesomeIcons.plus
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
                     )
                 ),
                 Expanded(
                   child: CardBMI(
-                      colour: kActiveCardColour
+                    colour: kActiveCardColour,
+                    cardChild: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text('Age', style: kLabelTextStyle,),
+                        Text('$age', style: kNumberTextStyle,),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            FloatingActionButton(
+                              onPressed: () {
+                                setState(() {
+                                  age--;
+                                });
+                              },
+                              child: Icon(FontAwesomeIcons.minus,color: kIconFloatinButton,),
+                              backgroundColor: kFloatinButton,
+                              elevation: 0.0,
+                            ),
+                            SizedBox(width: 10.0,),
+                            FloatingActionButton(
+                              onPressed: () {
+                                setState(() {
+                                  age++;
+                                });
+                              },
+                              child: Icon(FontAwesomeIcons.plus,color: kIconFloatinButton,),
+                              backgroundColor: kFloatinButton,
+                              elevation: 0.0,
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ],
             ),
           ),
 
-          Container(
-            color: kBottomContainerColour,
-            margin: EdgeInsets.only(top: 10.0),
-            width: double.infinity,
-            height: kBottomContainerHeight,
+          BottomButton(
+            onTap: () {
+              BMIBrain calc = BMIBrain(height: height,weight: weight);
+              Navigator.pushNamed(context, '/results', arguments: calc);
+            },
+            buttonTitle: 'CALCULATE',
           )
         ],
       ),
