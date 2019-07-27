@@ -7,10 +7,11 @@ import 'package:bmi_calculator/widgets/bmi_bottombutton.dart';
 import 'package:bmi_calculator/functions/bmi_brain.dart';
 
 class BMIResult extends StatelessWidget {
+  BMIResult({this.calc});
+  final BMIBrain calc;
 
   @override
   Widget build(BuildContext context) {
-    BMIBrain calc = ModalRoute.of(context).settings.arguments;
 
     return Scaffold(
       appBar: AppBar(
@@ -38,6 +39,9 @@ class BMIResult extends StatelessWidget {
                     Text(calc.category.toUpperCase(), style: kResultTextStyle,),
                     Text(calc.bmi, style: kBMITextStyle,),
                     Text(calc.description,textAlign: TextAlign.center, style: kBodyTextStyle,),
+                    //Text('Result', style: kResultTextStyle,),
+                    //Text('28.0', style: kBMITextStyle,),
+                    //Text('Description',textAlign: TextAlign.center, style: kBodyTextStyle,),
                   ],
                 ),
               ),
